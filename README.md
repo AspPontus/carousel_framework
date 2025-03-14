@@ -17,12 +17,15 @@ Below I will go over a basic setup of this class.
 
 ### Import the framework
 
-To get access to all the utilities of the framework we first need to include it in our project. To not crowd our files with code, we will hide the framework in our projects head tag. We can do this by adding this code to the top of our JavaScript tab.
+To get access to all the utilities of the framework we first need to include it in our project. To not crowd our files with code, we will hide the framework in our projects head tag. We can do this by adding this code to the top of our JavaScript tab, and then adding all subsequent carousel code to within the following codeblock.
 
       const script = document.createElement('script');
       script.defer;
       script.src = "https://cdn.jsdelivr.net/gh/AspPontus/carousel_framework@main/script.js?v6"
       document.head.appendChild(script);
+      script.onload = () => {
+        /*  ADD ALL CAROUSEL CODE HERE  */
+      }
 
 Now we should be able to create a carousel using the framework!
 
@@ -104,54 +107,56 @@ If you followed along with the above code you should have a result looking somet
     script.defer;
     script.src = "https://cdn.jsdelivr.net/gh/AspPontus/carousel_framework@main/script.js?v6"
     document.head.appendChild(script);
-
-    const data = 
-    [
-      {
-        img_url: "https://play2.s3.amazonaws.com/assets/Hf4I_TINk.png",
-        product_title: "Generic Car ST1 TEST",
-        price: "182 900 kr",
-        sale_price: "165 900 kr",
-        url: "https://seenthis.co",
-        tracking: "?ST_feed_template_car_1",
-        cta: "Buy now"
-      },
-      {
-        "img_url": "https://play2.s3.amazonaws.com/assets/jq53ArzNY.png",
-        "product_title": "Generic Car ST2",
-        "price": "152 900 kr",
-        "sale_price": "141 900 kr",
-        "url": "https://seenthis.co",
-        "tracking": "?ST_feed_template_car_2",
-        "cta": "Read more"
-      },
-      {
-        img_url: "https://play2.s3.amazonaws.com/assets/iyh1g8DUb.png",
-        product_title: "Generic Car ST3",
-        price: "229 900 kr",
-        sale_price: "212 900 kr",
-        url: "https://seenthis.co",
-        tracking: "?ST_feed_template_car_3",
-        cta: "Learn more"
-      },
-    ]
-
-    const template = const template = `
-      <a href="#url##tracking#" target="_blank">
-      <img class="car" src="#img_url#"/>
-      <div class="info-block outside">
-        <div class="info">
-          <h2>#product_title#<h2>
-          <h4>#price#</h4>
-          <h4 class="grey">Prvious price: #sale_price#</h4>
+    script.onload = () => {
+  
+      const data = 
+      [
+        {
+          img_url: "https://play2.s3.amazonaws.com/assets/Hf4I_TINk.png",
+          product_title: "Generic Car ST1 TEST",
+          price: "182 900 kr",
+          sale_price: "165 900 kr",
+          url: "https://seenthis.co",
+          tracking: "?ST_feed_template_car_1",
+          cta: "Buy now"
+        },
+        {
+          img_url: "https://play2.s3.amazonaws.com/assets/jq53ArzNY.png",
+          product_title: "Generic Car ST2",
+          price: "152 900 kr",
+          sale_price: "141 900 kr",
+          url: "https://seenthis.co",
+          tracking: "?ST_feed_template_car_2",
+          cta: "Read more"
+        },
+        {
+          img_url: "https://play2.s3.amazonaws.com/assets/iyh1g8DUb.png",
+          product_title: "Generic Car ST3",
+          price: "229 900 kr",
+          sale_price: "212 900 kr",
+          url: "https://seenthis.co",
+          tracking: "?ST_feed_template_car_3",
+          cta: "Learn more"
+        },
+      ]
+  
+      const template = `
+        <a href="#url##tracking#" target="_blank">
+        <img class="car" src="#img_url#"/>
+        <div class="info-block outside">
+          <div class="info">
+            <h2>#product_title#<h2>
+            <h4>#price#</h4>
+            <h4 class="grey">Prvious price: #sale_price#</h4>
+          </div>
+          <button class="cta outside">#cta#</button>
         </div>
-        <button class="cta outside">#cta#</button>
-      </div>
-      </a>
-      `
-    const location = document.querySelector('.static');
-      
-    const carousel = new Carousel(template, data, location);
+        </a>
+        `
+      const location = document.querySelector('.static');
+        
+      const carousel = new Carousel(template, data, location);
+    }
 
 
 
