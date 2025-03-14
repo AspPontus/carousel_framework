@@ -7,12 +7,24 @@ This is a framework to help AdOps more easily create and maintain various carous
 ### Overview:
 For this framework to work properly, it will require  a few things, these are
 
+*  Import the framework in the project
 *  The data that will be presented in the carousel
 *  An HTML template to dictate how your slides should look
 *  A location where the carousel should be injected (if omitted the carousel will default to the #creative)
 *  An instance of the Carousel class
   
 Below I will go over a basic setup of this class.
+
+### Import the framework
+
+To get access to all the utilities of the framework we first need to include it in our project. To not crowd our files with code, we will hide the framework in our projects head tag. We can do this by adding this code to the top of our JavaScript tab.
+
+      const script = document.createElement('script');
+      script.defer;
+      script.src = "https://cdn.jsdelivr.net/gh/AspPontus/carousel_framework@main/script.js?v6"
+      document.head.appendChild(script);
+
+Now we should be able to create a carousel using the framework!
 
 ### Carousel data
 
@@ -87,6 +99,11 @@ Beyond this there are quite a few utility functions that can be used. I will go 
 ## Carousel Example Code
 
 If you followed along with the above code you should have a result looking something like this in your project:
+
+    const script = document.createElement('script');
+    script.defer;
+    script.src = "https://cdn.jsdelivr.net/gh/AspPontus/carousel_framework@main/script.js?v6"
+    document.head.appendChild(script);
 
     const data = 
     [
