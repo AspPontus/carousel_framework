@@ -12,18 +12,29 @@ class Carousel {
   Loop = true; // - Takes in a value to say if the carousel should auto loop (Default true)
   Infinite = true; // - Takes in a value to say if the carousel should be infinite (Deafult true);
   Buttons = true; // - Parameter to signal if the buttons should be visible (Default true)
-    BtnImageL = null; // - Takes in an image url for the left button
+  BtnImageL = null; // - Takes in an image url for the left button
   BtnImageR = null; // - Takes in an image url for the right button
   AutoClickTags = true; // - Parameter to signal if the class should automaticaly assign areas clickTags
 
-  TransformAxis = 'X';
+  ActiveTransformAxis = 'X';
+  InactiveTransformAxis = 'Y';
   ReversedDirection = false;
-
+  CircularCarousel = false;
+  
+  // TODO: fix this, maybe put it as a class instead?
   HorizontalBtnCSS = `.carousel-btn{position: absolute;top: 0;left: 0;height: 100%;width: 60px;z-index: 1000;transition: .3s;display: flex;justify-content: center;align-items: center;font-size: 42px;}.carousel-btn:hover{transform: scale(1.1);}#next-btn {left: auto;right: 0;}`
   VerticalBtnCSS = `.carousel-btn{position: absolute;bottom: 0;left: 50%;height: 60px;width: 60px;z-index: 1000;transition: .3s;display: flex;justify-content: center;align-items: center;font-size: 42px; transform: translate(-50%) rotate(-90deg);}.carousel-btn:hover{transform: translate(-50%) scale(1.1) rotate(-90deg);}#next-btn {top:0;bottom:auto;}`
   BtnCSS = this.HorizontalBtnCSS;
 
   ReverseBtns = false;
+
+  NeighbourElementProperties = {
+    translateX: 100,
+    translateY: -20,
+    scale: 1.0,
+    opacity: 1,
+  }
+
 
   // Private properties
   PlaceholderVals = []; // - Stores all the found placeholders found in the template
@@ -36,6 +47,7 @@ class Carousel {
 
   OutsideOfSliderEl = [];
   ClickTag = 'clickTag1';
+  
   
   constructor(
     template,
@@ -68,6 +80,14 @@ class Carousel {
     this.Loop ? this.LoopCarousel() : '';
     this.InjectStyles();
     this.MoveElementsOut();
+
+    this.NeighbourElements = new Proxy(this.NeighbourElementProperties, {
+      set: (target, key, value) => {
+        this.OnChange(key, value);
+        target[key] = value;
+        return true;
+      }
+    });
   }
 
   // Parses the tamplate to sniff out the placeholder values in order to replace them later
@@ -146,7 +166,6 @@ class Carousel {
       image.src = src; 
       parent.appendChild(image);
   }
-
 
   // Add all exisiting products to the carousel
   AddAllProds = () => {
@@ -322,7 +341,6 @@ class Carousel {
 
   MoveElementsOut = () => {
     if (this.OutsideOfSliderEl.length <= 0) return;
-    console.log(this.OutsideOfSliderEl)
     this.OutsideOfSliderEl.forEach(el => {
       const outside = document.querySelector('#carousel').querySelectorAll(`.${el.replaceAll(' ', '.')}`)
       outside.forEach((outside, index) => {
@@ -347,14 +365,16 @@ class Carousel {
 
   SetAsHorizontal = () => {
     this.Stylesheet.remove();
-    this.TransformAxis = 'X';
+    this.ActiveTransformAxis = 'X';
+    this.InactiveTransformAxis = 'Y';
     this.BtnCSS = this.HorizontalBtnCSS;
     this.InjectStyles();
   }
 
   SetAsVertical = () => {
     this.Stylesheet.remove();
-    this.TransformAxis = 'Y';
+    this.ActiveTransformAxis = 'Y';
+    this.InactiveTransformAxis = 'X';
     this.BtnCSS = this.VerticalBtnCSS;
     this.InjectStyles();
   }
@@ -369,9 +389,27 @@ class Carousel {
     this.ReverseBtns = !this.ReverseBtns;
   }
 
+  OnChange(key, value) {
+    this.Stylesheet.remove();
+    this.NeighbourElementProperties[`${key}`] = value;
+    this.InjectStyles();
+  }
+
+  EnableCircularCarousel = () => {
+    this.Stylesheet.remove();
+    this.CircularCarousel = true;
+    this.InjectStyles();
+  }
+
+  DisableCircularCarousel = () => {
+    this.Stylesheet.remove();
+    this.CircularCarousel = false;
+    this.InjectStyles();
+  }
+
   InjectStyles = () => {
     const source = `
-    #carousel{position: relative;width: 100%;height: 100%;overflow:hidden;}#carousel-inner{position: relative;width: 100%;height: 100%;}${this.BtnCSS}.prod-wrapper{position: absolute;width: 100%;height: 100%;justify-content: center;align-items: center;display: none;}.prod-inner{position: relative;width: 100%;height: 100%;}.prod-wrapper.active, .prod-slide-out{transition: ${this.AnimationTimeMs / 1000}s;}.prod-wrapper.active, .prod-wrapper.prev,.prod-wrapper.next{display: flex;}.prod-wrapper.next{transform: translate${this.TransformAxis}(${this.ReversedDirection ? '-' : ''}100%);}.prod-wrapper.prev{transform: translate${this.TransformAxis}(${this.ReversedDirection ? '' : '-'}100%);}.outside{position: absolute;display: none !important;}.outside.showActiveElement{display: block !important;}`
+    #carousel{position: relative;width: 100%;height: 100%;overflow:hidden;}#carousel-inner{position: relative;width: 100%;height: 100%;}${this.BtnCSS}.prod-wrapper{position: absolute;width: 100%;height: 100%;justify-content: center;align-items: center;display: none;}.prod-inner{position: relative;width: 100%;height: 100%;}.prod-wrapper.active, .prod-slide-out{transition: ${this.AnimationTimeMs / 1000}s; z-index:999;}.prod-wrapper.active, .prod-wrapper.prev,.prod-wrapper.next{display: flex;}.prod-wrapper.next{transform: translate${this.ActiveTransformAxis}(${this.ReversedDirection ? '-' : ''}${this.NeighbourElementProperties.translateX}%) translate${this.InactiveTransformAxis}(${this.NeighbourElementProperties.translateY}%) scale(${this.NeighbourElementProperties.scale});}.prod-wrapper.prev{transform: translate${this.ActiveTransformAxis}(${this.ReversedDirection ? '' : '-'}${this.NeighbourElementProperties.translateX}%) translate${this.InactiveTransformAxis}(${this.NeighbourElementProperties.translateY}%) scale(${this.NeighbourElementProperties.scale});}.outside{position: absolute;display: none !important;}.outside.showActiveElement{display: block !important;}.prod-wrapper.prev,.prod-wrapper.next{opacity: ${this.NeighbourElementProperties.opacity};}${this.CircularCarousel ? `.prod-wrapper.active, .prod-wrapper.prev,.prod-wrapper.next{transition: ${this.AnimationTimeMs / 1000}s}` : ''}`
 
   this.Stylesheet.textContent = source;
   document.head.append(this.Stylesheet);
